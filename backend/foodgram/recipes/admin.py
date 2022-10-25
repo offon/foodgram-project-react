@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag, Component
-from users.models import User
+from .models import Component, Ingredient, Recipe, Tag
 
 
 class ComponentInline(admin.TabularInline):
@@ -17,6 +16,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (ComponentInline, )
 
 
+admin.site.register(Component)
 admin.site.register(Ingredient)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag)

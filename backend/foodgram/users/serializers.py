@@ -33,5 +33,4 @@ class ListRetrieveUserSerialiser(serializers.ModelSerializer):
             return Follow.objects.filter(
                 user=context.user,
                 author=obj).exists()
-            # return context.user.following.filter(author=obj).exists()
         return False
