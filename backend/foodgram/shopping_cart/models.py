@@ -1,3 +1,21 @@
 from django.db import models
+from recipes.models import Recipe
+from users.models import User
 
-# Create your models here.
+
+class IsInShoppingCart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_in_shopping_cart = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE,
+        related_name='is_in_shopping_cart')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'is_in_shopping_cart'],
+                name='unique_user_is_in_shopping_cart'
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.is_in_shopping_cart.name

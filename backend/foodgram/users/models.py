@@ -15,8 +15,8 @@ class User(AbstractUser):
     )
     first_name = models.CharField(('first name'), max_length=150, blank=False)
     last_name = models.CharField(('last name'), max_length=150, blank=False)
-    email = models.EmailField(('email address'), max_length=254, blank=False)
-    # is_subscribed = models.ManyToManyField('self', through='Follow')
+    email = models.EmailField(('email address'), max_length=254,
+                              blank=False, unique=True)
 
 
 class Follow(models.Model):
@@ -24,6 +24,7 @@ class Follow(models.Model):
         'User', on_delete=models.CASCADE, related_name='follower')
     author = models.ForeignKey(
         'User', on_delete=models.CASCADE, related_name='following')
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

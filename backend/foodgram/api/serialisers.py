@@ -1,10 +1,10 @@
 import base64
-from django.shortcuts import get_list_or_404, get_object_or_404
 
 from django.core.files.base import ContentFile
-from recipes.models import Component, Ingredient, Recipe, Tag
-from rest_framework import serializers, exceptions
-
+from django.shortcuts import get_list_or_404
+from recipes.models import Component, Ingredient, Recipe, Tag, Favorite
+from rest_framework import exceptions, serializers
+from shopping_cart.models import IsInShoppingCart
 from users.serializers import ListRetrieveUserSerialiser
 
 
@@ -53,15 +53,33 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
     tags = TagsSerialisers(many=True, read_only=True)
     author = ListRetrieveUserSerialiser(read_only=True)
     ingredients = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_ingredients(self, obj):
         ingredients = get_list_or_404(Component, recipe=obj)
         serialiser = ComponentSerialiser(ingredients, many=True)
         return serialiser.data
 
+    def get_is_favorited(self, obj):
+        context = self.context.get('request')
+        if context and hasattr(context, 'user'):
+            return Favorite.objects.filter(
+                user=context.user, is_favorited=obj).exists()
+        return False
+
+    def get_is_in_shopping_cart(self, obj):
+        context = self.context.get('request')
+        if context and hasattr(context, 'user'):
+            return IsInShoppingCart.objects.filter(
+                user=context.user, is_in_shopping_cart=obj).exists()
+        return False
+
     class Meta():
         model = Recipe
-        exclude = ('pub_date', )
+        fields = ('id', 'tags', 'author',
+                  'ingredients', 'is_favorited', 'is_in_shopping_cart', 'name',
+                  'text', 'cooking_time')
 
     def create(self, validated_data):
         request = self.context['request']
@@ -79,8 +97,19 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
             )
             except Exception as e:
                 recipe.delete()
-                return exceptions.bad_request
+                return exceptions.NotFound(e)
         return recipe
+
+    def update(self, instance, validated_data):
+        instance.image = validated_data.get('image', instance.image)
+        instance.save()
+        return instance
+
+
+class RecieptForFollowersSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['id', 'name', 'image', 'cooking_time']
 
 
 class Base64ImageField(serializers.ImageField):

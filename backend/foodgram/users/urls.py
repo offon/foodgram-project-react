@@ -8,6 +8,6 @@ router = routers.DefaultRouter()
 router.register(r'users', CreateUserViewSet, basename='users')
 
 urlpatterns = [
-    path(r'auth/', include(authtoken)),
     path("", include(router.urls)),
+    path(r'auth/', include(authtoken)),
 ]

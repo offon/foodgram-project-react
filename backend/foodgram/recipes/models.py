@@ -33,14 +33,13 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reciepts')
     name = models.CharField(max_length=200, unique=True, blank=False)
     tags = models.ManyToManyField(Tag, blank=False)
     image = models.ImageField(blank=True)
     text = models.TextField(blank=False)
     cooking_time = models.PositiveIntegerField(blank=False)
-    is_favorited = models.BooleanField(default=False)
-    is_in_shopping_cart = models.BooleanField(default=False)
     ingredients = models.ManyToManyField(
         Ingredient, through="Component",
         blank=False)
@@ -53,12 +52,39 @@ class Recipe(models.Model):
         return self.name
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='is_favorited')
+    is_favorited = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE,)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'is_favorited'],
+                name='unique_user_is_favorited'
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.is_favorited.name
+
+
 class Component(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='components'
         )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.DO_NOTHING)
     quantity = models.FloatField(blank=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient'
+            ),
+        ]

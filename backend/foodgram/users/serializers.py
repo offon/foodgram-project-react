@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import Follow, User
+from api import serialisers as api_serialiser
 
 
 class CreateUserSerialiser(serializers.ModelSerializer):
@@ -34,3 +35,18 @@ class ListRetrieveUserSerialiser(serializers.ModelSerializer):
                 user=context.user,
                 author=obj).exists()
         return False
+
+
+class SubscribSerialiser(ListRetrieveUserSerialiser):
+    reciepts = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed', 'reciepts')
+    def get_reciepts(self, obj):
+        reciepts = obj.reciepts.all()
+        if reciepts:
+            return api_serialiser.RecieptForFollowersSerialiser(
+                reciepts, many=True).data
+        else:
+            return {}

@@ -8,12 +8,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-PROJECT_EMAIL = 'registration@yamdb.ru'
-
-URL_FOR_GET_TOKEN = 'http://127.0.0.1:8000/api/v1/auth/token/'
-
-BLOCKED_NAMES = ['me', ]
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,7 +20,8 @@ INSTALLED_APPS = [
     'djoser',
     'api',
     'recipes',
-    'users'
+    'users',
+    'shopping_cart'
 ]
 AUTH_USER_MODEL = 'users.User'
 
@@ -60,10 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -73,7 +65,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
