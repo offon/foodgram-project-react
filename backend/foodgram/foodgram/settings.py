@@ -6,7 +6,7 @@ SECRET_KEY = '&-yqs#3bok5+vnaw2zvrxs7ktz9y2(^c27g-l6-8g8^#b)0fl5'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['web', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'djoser',
     'api',
     'recipes',
@@ -24,6 +25,7 @@ INSTALLED_APPS = [
     'shopping_cart'
 ]
 AUTH_USER_MODEL = 'users.User'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

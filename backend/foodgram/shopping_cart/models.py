@@ -4,10 +4,10 @@ from users.models import User
 
 
 class IsInShoppingCart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='is_in_shopping_cart')
     is_in_shopping_cart = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE,
-        related_name='is_in_shopping_cart')
+        Recipe, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [

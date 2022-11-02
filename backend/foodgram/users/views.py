@@ -9,6 +9,8 @@ from .serializers import CreateUserSerialiser, ListRetrieveUserSerialiser, Subsc
 
 
 class CreateUserViewSet(viewsets.GenericViewSet):
+    serializer_class = CreateUserSerialiser
+    
     @action(
         detail=False,
         methods=['get', ],

@@ -56,6 +56,7 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
+
     def get_ingredients(self, obj):
         ingredients = get_list_or_404(Component, recipe=obj)
         serialiser = ComponentSerialiser(ingredients, many=True)
@@ -63,14 +64,14 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         context = self.context.get('request')
-        if context and hasattr(context, 'user'):
+        if context and hasattr(context, 'user') and context.auth:
             return Favorite.objects.filter(
                 user=context.user, is_favorited=obj).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):
         context = self.context.get('request')
-        if context and hasattr(context, 'user'):
+        if context and hasattr(context, 'user') and context.auth:
             return IsInShoppingCart.objects.filter(
                 user=context.user, is_in_shopping_cart=obj).exists()
         return False

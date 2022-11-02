@@ -44,7 +44,6 @@ class Recipe(models.Model):
         Ingredient, through="Component",
         blank=False)
     pub_date = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         ordering = ['-pub_date']
 

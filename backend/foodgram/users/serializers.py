@@ -38,15 +38,21 @@ class ListRetrieveUserSerialiser(serializers.ModelSerializer):
 
 
 class SubscribSerialiser(ListRetrieveUserSerialiser):
-    reciepts = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ('email', 'id', 'username', 'first_name',
-                  'last_name', 'is_subscribed', 'reciepts')
-    def get_reciepts(self, obj):
-        reciepts = obj.reciepts.all()
-        if reciepts:
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_recipes_count(self, obj):
+        return obj.reciepts.count()
+
+    def get_recipes(self, obj):
+        recipes = obj.reciepts.all()
+        if recipes:
             return api_serialiser.RecieptForFollowersSerialiser(
-                reciepts, many=True).data
+                recipes, many=True).data
         else:
             return {}
