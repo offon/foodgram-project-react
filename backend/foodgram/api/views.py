@@ -32,7 +32,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    # queryset = Recipe.objects.all()
     serializer_class = RecipesGetSerialiser
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = [AuthorOrReadOnly, ]
@@ -42,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-        if self.request.query_params.get('is_favorited'):
+        if self.request.query_params.get('t4'):
             reciepts_str_list = self.request.user.is_favorited.all().values_list(
                     'is_favorited', flat=True)
             queryset = Recipe.objects.filter(
@@ -100,8 +99,8 @@ class FavoritesViewSet(viewsets.ModelViewSet):
     search_fields = ('name', )
 
     def get_queryset(self):
-        reciepts_str_list =  self.request.user.is_favorited.all().values_list(
-                'is_favorited', flat=True)
+        reciepts_str_list = self.request.user.is_favorited.all().values_list(
+            'is_favorited', flat=True)
         reciepts = Recipe.objects.filter(
             pk__in=reciepts_str_list)
         return reciepts

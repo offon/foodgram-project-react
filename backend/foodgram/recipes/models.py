@@ -20,6 +20,10 @@ class Tag(models.Model):
         unique=True,
         blank=False)
 
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
     def __str__(self) -> str:
         return self.name
 
@@ -27,6 +31,10 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=200, unique=True, blank=False)
     measurement_unit = models.CharField(max_length=200, blank=False)
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
     def __str__(self) -> str:
         return self.name
@@ -44,8 +52,11 @@ class Recipe(models.Model):
         Ingredient, through="Component",
         blank=False)
     pub_date = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         ordering = ['-pub_date']
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self) -> str:
         return self.name
@@ -55,9 +66,11 @@ class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              related_name='is_favorited')
     is_favorited = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE,)
+        Recipe, on_delete=models.CASCADE, related_name='favorited_recipe')
 
     class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'is_favorited'],
@@ -81,6 +94,8 @@ class Component(models.Model):
     quantity = models.FloatField(blank=False)
 
     class Meta:
+        verbose_name = 'Компонент'
+        verbose_name_plural = 'Компоненты'
         constraints = [
             models.UniqueConstraint(
                 fields=['recipe', 'ingredient'],

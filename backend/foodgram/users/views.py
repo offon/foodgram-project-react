@@ -10,7 +10,8 @@ from .serializers import CreateUserSerialiser, ListRetrieveUserSerialiser, Subsc
 
 class CreateUserViewSet(viewsets.GenericViewSet):
     serializer_class = CreateUserSerialiser
-    
+    queryset = User.objects.all()
+
     @action(
         detail=False,
         methods=['get', ],

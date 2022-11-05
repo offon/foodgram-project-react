@@ -1,11 +1,20 @@
 import base64
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from recipes.models import Component, Ingredient, Recipe, Tag, Favorite
 from rest_framework import exceptions, serializers
 from shopping_cart.models import IsInShoppingCart
 from users.serializers import ListRetrieveUserSerialiser
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        return super().to_internal_value(data)
 
 
 class TagsSerialisers(serializers.ModelSerializer):
@@ -55,7 +64,7 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-
+    image = Base64ImageField(required=False, allow_null=True)
 
     def get_ingredients(self, obj):
         ingredients = get_list_or_404(Component, recipe=obj)
@@ -78,7 +87,7 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
 
     class Meta():
         model = Recipe
-        fields = ('id', 'tags', 'author',
+        fields = ('id', 'tags', 'author', 'image',
                   'ingredients', 'is_favorited', 'is_in_shopping_cart', 'name',
                   'text', 'cooking_time')
 
@@ -94,14 +103,78 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
                 Component.objects.create(
                     recipe=recipe,
                     ingredient=Ingredient.objects.get(id=ingredient['id']),
-                    quantity=ingredient['amount']
-            )
+                    quantity=ingredient['amount'])
             except Exception as e:
                 recipe.delete()
                 return exceptions.NotFound(e)
         return recipe
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if not hasattr(request, 'data'):
+            raise exceptions.bad_request
+        data = request.data
+        shopping_cart = data.get('is_in_shopping_cart')
+
+        if shopping_cart:
+            IsInShoppingCart.objects.get_or_create(
+                user=instance.author, is_in_shopping_cart=instance)
+        elif shopping_cart is False:
+            sc = IsInShoppingCart.objects.filter(
+                user=instance.author_id, is_in_shopping_cart=instance.id)
+            if sc.exists():
+                IsInShoppingCart.objects.get(
+                    user=instance.author_id,
+                    is_in_shopping_cart=instance.id).delete()
+        is_favorited = data.get('is_favorited')
+
+        if is_favorited:
+            Favorite.objects.get_or_create(
+                user=instance.author, is_favorited=instance)
+        elif is_favorited is False:
+            favorite = Favorite.objects.filter(
+                user=instance.author_id, is_favorited=instance.id)
+            if favorite.exists():
+                Favorite.objects.get(
+                    user=instance.author_id, is_favorited=instance.id).delete()
+        tags = data.get('tags')
+        if tags:
+            instance.tags.set([])
+            for tag in tags:
+                tag_for_add = get_object_or_404(Tag, id=tag)
+                instance.tags.add(tag_for_add)
+
+        ingredients = data.get('ingredients')
+        components_data = []
+        if ingredients and hasattr(ingredients, '__iter__'):
+            for ingredient in ingredients:
+                try:
+                    ingredient_from_db = Ingredient.objects.get(
+                        id=ingredient.get('id'))
+                except:
+                    raise exceptions.ValidationError('Нет такого ингредиента')
+                try:
+                    amount = int(ingredient.get('amount'))
+                except:
+                    raise exceptions.ValidationError(
+                        'Не корректно задано количество ингредиента')
+                components_data.append(
+                    {'ingredient': ingredient_from_db,
+                     'recipe': instance,
+                     'amount': amount})
+
+        if components_data:
+            Component.objects.filter(recipe=instance).delete()
+            for component in components_data:
+                _, add_component = Component.objects.get_or_create(
+                    ingredient=component.get('ingredient'),
+                    recipe=component.get('recipe'),
+                    quantity=component.get('amount'),
+                )
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time)
         instance.image = validated_data.get('image', instance.image)
         instance.save()
         return instance
@@ -112,18 +185,3 @@ class RecieptForFollowersSerialiser(serializers.ModelSerializer):
         model = Recipe
         fields = ['id', 'name', 'image', 'cooking_time']
 
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
-
-
-
-    # def update(self, instance, validated_data):
-    #     instance.image = validated_data.get('image', instance.image)
-    #     instance.save()
-    #     return instance

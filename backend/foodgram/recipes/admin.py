@@ -14,13 +14,41 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'author', 'favorite_count']
+    display = ['name', 'author', 'favorite_count']
+    list_filter = ('name', 'author', 'tags')
+    search_fields = ('name', 'author')
     inlines = (ComponentInline, )
 
+    def favorite_count(self, inst):
+        return inst.favorited_recipe.count()
 
-admin.site.register(Component)
-admin.site.register(Ingredient)
+
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    list_filter = ('name', 'measurement_unit')
+    search_fields = ('name', )
+
+
+class ComponentAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient', 'quantity')
+
+
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_favorited')
+
+
+class IsInShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_in_shopping_cart')
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'color', 'slug')
+
+
+admin.site.register(Component, ComponentAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Tag)
-admin.site.register(Favorite)
-admin.site.register(IsInShoppingCart)
-
+admin.site.register(Tag, TagAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(IsInShoppingCart, IsInShoppingCartAdmin)
