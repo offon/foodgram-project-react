@@ -41,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-        if self.request.query_params.get('t4'):
+        if self.request.query_params.get('is_favorited'):
             reciepts_str_list = self.request.user.is_favorited.all().values_list(
                     'is_favorited', flat=True)
             queryset = Recipe.objects.filter(
