@@ -13,12 +13,13 @@ from foodgram import settings
 
 
 def shopping_cart_pdf(user):
-    reciepts = user.is_favorited.select_related('is_favorited').all()
+    reciepts = user.is_in_shopping_cart.select_related(
+        'is_in_shopping_cart').all()
     reciepts_str = ''
     components = {}
     for reciept in reciepts:
-        reciepts_str += f'&bull {reciept.is_favorited}<br/>'
-        for componet in reciept.is_favorited.components.all():
+        reciepts_str += f'&bull {reciept.is_in_shopping_cart}<br/>'
+        for componet in reciept.is_in_shopping_cart.components.all():
             if components.get(componet.ingredient):
                 components[componet.ingredient] = [
                     components[componet.ingredient][0] + componet.quantity,

@@ -10,4 +10,6 @@ PyJWT==2.1.0
 requests==2.26.0
 reportlab
 gunicorn==20.0.4
+psycopg2-binary==2.8.6
 django-filter
+debugpy
