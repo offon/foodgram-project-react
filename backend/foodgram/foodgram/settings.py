@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', '*')
 
 DEBUG = True
 
@@ -60,12 +60,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT')
+        'ENGINE': os.getenv('DB_ENGINE', 'DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME', 'DB_NAME'),
+        'USER': os.getenv('POSTGRES_USER', 'POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'DB_HOST'),
+        'PORT': os.getenv('DB_PORT', 'DB_PORT')
     }
 }
 
