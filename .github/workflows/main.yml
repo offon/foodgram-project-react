@@ -22,7 +22,7 @@ jobs:
         uses: docker/build-push-action@v2 
         with:
           context: backend/
-          file: infra/Dockerfile
+          file: backend/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/web:latest
   deploy:
