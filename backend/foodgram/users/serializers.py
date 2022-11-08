@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from .models import Follow, User
 from api import serialisers as api_serialiser
+from .models import Follow, User
 
 
 class CreateUserSerialiser(serializers.ModelSerializer):
@@ -54,5 +54,4 @@ class SubscribSerialiser(ListRetrieveUserSerialiser):
         if recipes:
             return api_serialiser.RecieptForFollowersSerialiser(
                 recipes, many=True).data
-        else:
-            return {}
+        return {}

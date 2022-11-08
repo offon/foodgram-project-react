@@ -3,15 +3,13 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 from django.db import models
 
-username_validator = UnicodeUsernameValidator()
-
 
 class User(AbstractUser):
     username = models.CharField(
         ('username'),
         max_length=150,
         unique=True,
-        validators=[username_validator],
+        validators=[UnicodeUsernameValidator()],
     )
     first_name = models.CharField(('first name'), max_length=150, blank=False)
     last_name = models.CharField(('last name'), max_length=150, blank=False)

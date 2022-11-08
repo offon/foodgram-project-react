@@ -22,7 +22,6 @@ class CreateUserViewSet(viewsets.GenericViewSet):
         if request.method == 'GET':
             serializer = ListRetrieveUserSerialiser(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
@@ -41,7 +40,6 @@ class CreateUserViewSet(viewsets.GenericViewSet):
             if page is not None:
                 return self.get_paginated_response(serializer.data)
             return self.get_paginated_response(serializer.data)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['delete', 'post'], detail=True)
     def subscribe(self, request, pk=None):
@@ -53,12 +51,11 @@ class CreateUserViewSet(viewsets.GenericViewSet):
             if created:
                 return Response(status=status.HTTP_200_OK)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            user_follow = get_object_or_404(
-                User, pk=pk)
-            unfollow = get_object_or_404(Follow, author=user_follow)
-            unfollow.delete()
-            return Response(status=status.HTTP_200_OK)
+        user_follow = get_object_or_404(
+            User, pk=pk)
+        unfollow = get_object_or_404(Follow, author=user_follow)
+        unfollow.delete()
+        return Response(status=status.HTTP_200_OK)
 
     @action(
         ["post", ],
@@ -83,7 +80,7 @@ class CreateUserViewSet(viewsets.GenericViewSet):
         serializer = CreateUserSerialiser(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):
         if not request.user.is_authenticated:
