@@ -134,3 +134,4 @@ dmypy.json
 # .http
 .http
 .vscode/
+db.sqlite3
