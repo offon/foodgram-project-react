@@ -87,7 +87,8 @@ django-filter
 | ---- | ----------- |
 | 200 |  |
 
-```{
+```
+{
   "count": 123,
   "next": "http://foodgram.example.org/api/users/?page=4",
   "previous": "http://foodgram.example.org/api/users/?page=2",
@@ -101,7 +102,8 @@ django-filter
       "is_subscribed": false
     }
   ]
-}```
+}
+```
 
 
 #### POST
