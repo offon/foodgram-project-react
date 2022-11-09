@@ -36,8 +36,6 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.KEY }}
         script: |
-          sudo docker-compose stop
-          sudo docker-compose rm -f web
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -47,6 +45,9 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo ALLOWED_HOSTS=${{ secrets.HOST }} >> .env
+          sudo cd infra/
+          sudo docker-compose stop
+          sudo docker-compose rm -f web
           sudo docker-compose up -d
   send_message:
     runs-on: ubuntu-latest
