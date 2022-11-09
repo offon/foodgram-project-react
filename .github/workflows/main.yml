@@ -36,6 +36,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.KEY }}
         script: |
+          cd infra
           sudo docker-compose stop
           sudo docker-compose rm -f web
           touch .env
