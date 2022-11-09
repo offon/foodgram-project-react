@@ -73,13 +73,11 @@ django-filter
 ### Примеры запросов
 
 ## Пользователи
+
 ### /api/users/
 
 #### GET
-```
-http://localhost/api/users/
 
-```
 ##### Список пользователей
 
 ##### Параметры
@@ -113,11 +111,10 @@ http://localhost/api/users/
 }
 ```
 
-#### POST
-```
-http://localhost/api/users/
+### /api/users/
 
-```
+#### POST
+
 ##### Регистрация пользователя
 
 ```
@@ -153,11 +150,11 @@ http://localhost/api/users/
 }
 ```
 
+
+### /api/users/{id}/
+
 #### GET
 
-```
-http://localhost/api/users/{id}/
-```
 ##### Профиль пользователя
 
 ##### Responses
@@ -179,12 +176,10 @@ http://localhost/api/users/{id}/
 }
 ```
 
+### /api/users/me/
+
 #### GET
 
-```
-http://localhost/api/users/me/
-
-```
 ##### Текущий пользователь
 
 ##### Responses
@@ -206,14 +201,72 @@ http://localhost/api/users/me/
 ```
 
 
+### /api/users/set_password/
 
+#### POST
+
+##### Изменение пароля
+
+```
+{
+  "new_password": "string",
+  "current_password": "string"
+}
+```
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Пароль успешно изменен |
+| 401 | Пользователь не авторизован  |
+| 404 | Объект не найден  |
+
+
+### /api/auth/token/login/
+
+#### POST
+
+##### Получить токен авторизации
+
+```
+{
+  "password": "string",
+  "email": "string"
+}
+```
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | - |
+
+```
+{
+  "auth_token": "string"
+}
+```
+### /api/auth/token/logout/
+
+#### POST
+
+##### Удаление токена
+
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | - |
+| 401 | Пользователь не авторизован  |
+
+## Теги
 
 ### /api/tags/
 
 #### GET
-##### Описание
-
-
+##### Cписок тегов
 
 ##### Параметры
 
@@ -226,11 +279,21 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 200 |  |
 
+```
+[
+  {
+    "id": 0,
+    "name": "Завтрак",
+    "color": "#E26C2D",
+    "slug": "breakfast"
+  }
+]
+```
+
 ### /api/tags/{id}/
 
 #### GET
-##### Описание
-
+##### Получение тега
 
 
 ##### Параметры
@@ -246,10 +309,20 @@ http://localhost/api/users/me/
 | 200 |  |
 | 404 |  |
 
+```
+{
+  "id": 0,
+  "name": "Завтрак",
+  "color": "#E26C2D",
+  "slug": "breakfast"
+}
+```
+## Рецепты
+
 ### /api/recipes/
 
 #### GET
-##### Описание
+##### Список рецептов
 
 Страница доступна всем пользователям. Доступна фильтрация по избранному, автору, списку покупок и тегам.
 
@@ -270,8 +343,51 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 200 |  |
 
+```
+{
+  "count": 123,
+  "next": "http://foodgram.example.org/api/recipes/?page=4",
+  "previous": "http://foodgram.example.org/api/recipes/?page=2",
+  "results": [
+    {
+      "id": 0,
+      "tags": [
+        {
+          "id": 0,
+          "name": "Завтрак",
+          "color": "#E26C2D",
+          "slug": "breakfast"
+        }
+      ],
+      "author": {
+        "email": "user@example.com",
+        "id": 0,
+        "username": "string",
+        "first_name": "Вася",
+        "last_name": "Пупкин",
+        "is_subscribed": false
+      },
+      "ingredients": [
+        {
+          "id": 0,
+          "name": "Картофель отварной",
+          "measurement_unit": "г",
+          "amount": 1
+        }
+      ],
+      "is_favorited": true,
+      "is_in_shopping_cart": true,
+      "name": "string",
+      "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+      "text": "string",
+      "cooking_time": 1
+    }
+  ]
+}
+```
+
 #### POST
-##### Описание
+##### Создание рецепта
 
 Доступно только авторизованному пользователю
 
@@ -295,10 +411,215 @@ http://localhost/api/users/me/
 | --- | --- |
 | Token | |
 
+```
+{
+  "ingredients": [
+    {
+      "id": 1123,
+      "amount": 10
+    }
+  ],
+  "tags": [
+    1,
+    2
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "string",
+  "text": "string",
+  "cooking_time": 1
+}
+```
+### http://localhost/api/recipes/{id}/
+#### GET
+##### Получение рецепта
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого Рецепта. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+```
+{
+  "id": 0,
+  "tags": [
+    {
+      "id": 0,
+      "name": "Завтрак",
+      "color": "#E26C2D",
+      "slug": "breakfast"
+    }
+  ],
+  "author": {
+    "email": "user@example.com",
+    "id": 0,
+    "username": "string",
+    "first_name": "Вася",
+    "last_name": "Пупкин",
+    "is_subscribed": false
+  },
+  "ingredients": [
+    {
+      "id": 0,
+      "name": "Картофель отварной",
+      "measurement_unit": "г",
+      "amount": 1
+    }
+  ],
+  "is_favorited": true,
+  "is_in_shopping_cart": true,
+  "name": "string",
+  "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+  "text": "string",
+  "cooking_time": 1
+}
+```
+
+#### PATCH
+##### Обновление рецепта
+
+Доступно только авторизованному пользователю
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого Рецепта. | Yes | string |
+
+```
+{
+  "ingredients": [
+    {
+      "id": 1123,
+      "amount": 10
+    }
+  ],
+  "tags": [
+    1,
+    2
+  ],
+  "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAgMAAABieywaAAAACVBMVEUAAAD///9fX1/S0ecCAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAACklEQVQImWNoAAAAggCByxOyYQAAAABJRU5ErkJggg==",
+  "name": "string",
+  "text": "string",
+  "cooking_time": 1
+}
+```
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Рецепт успешно обновлен |
+| 400 | Ошибки валидации в стандартном формате DRF, в том числе с внутренними элементами. |
+| 401 | Пользователь не авторизован  |
+| 403 | Недостаточно прав  |
+| 404 | Объект не найден  |
+
+```
+{
+  "id": 0,
+  "tags": [
+    {
+      "id": 0,
+      "name": "Завтрак",
+      "color": "#E26C2D",
+      "slug": "breakfast"
+    }
+  ],
+  "author": {
+    "email": "user@example.com",
+    "id": 0,
+    "username": "string",
+    "first_name": "Вася",
+    "last_name": "Пупкин",
+    "is_subscribed": false
+  },
+  "ingredients": [
+    {
+      "id": 0,
+      "name": "Картофель отварной",
+      "measurement_unit": "г",
+      "amount": 1
+    }
+  ],
+  "is_favorited": true,
+  "is_in_shopping_cart": true,
+  "name": "string",
+  "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+  "text": "string",
+  "cooking_time": 1
+}
+```
+
+#### DELETE
+##### Удаление рецепта
+
+Доступно только авторизованному пользователю
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого Рецепта. | Yes | string |
+
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Рецепт успешно удален |
+| 401 | Пользователь не авторизован  |
+| 403 | Недостаточно прав  |
+| 404 | Объект не найден  |
+
+```
+{
+  "id": 0,
+  "tags": [
+    {
+      "id": 0,
+      "name": "Завтрак",
+      "color": "#E26C2D",
+      "slug": "breakfast"
+    }
+  ],
+  "author": {
+    "email": "user@example.com",
+    "id": 0,
+    "username": "string",
+    "first_name": "Вася",
+    "last_name": "Пупкин",
+    "is_subscribed": false
+  },
+  "ingredients": [
+    {
+      "id": 0,
+      "name": "Картофель отварной",
+      "measurement_unit": "г",
+      "amount": 1
+    }
+  ],
+  "is_favorited": true,
+  "is_in_shopping_cart": true,
+  "name": "string",
+  "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+  "text": "string",
+  "cooking_time": 1
+}
+```
+
+## Список покупок
+
 ### /api/recipes/download_shopping_cart/
 
 #### GET
-##### Описание
+##### Скачать список покупок
 
 Скачать файл со списком покупок. Это может быть TXT/PDF/CSV. Важно, чтобы контент файла удовлетворял требованиям задания. Доступно только авторизованным пользователям.
 
@@ -312,7 +633,7 @@ http://localhost/api/users/me/
 | Code | Description |
 | ---- | ----------- |
 | 200 |  |
-| 401 |  |
+| 401 | Пользователь не авторизован |
 
 ##### Security
 
@@ -320,134 +641,11 @@ http://localhost/api/users/me/
 | --- | --- |
 | Token | |
 
-### /api/recipes/{id}/
-
-#### GET
-##### Описание
-
-
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный идентификатор этого рецепта | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 |  |
-
-#### PATCH
-##### Описание
-
-Доступно только автору данного рецепта
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Рецепт успешно обновлен |
-| 400 |  |
-| 401 |  |
-| 403 |  |
-| 404 |  |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| Token | |
-
-#### DELETE
-##### Описание
-
-Доступно только автору данного рецепта
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный идентификатор этого рецепта | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 204 | Рецепт успешно удален |
-| 401 |  |
-| 403 |  |
-| 404 |  |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| Token | |
-
-### /api/recipes/{id}/favorite/
-
-#### POST
-##### Описание
-
-Доступно только авторизованному пользователю.
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный идентификатор этого рецепта | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 201 | Рецепт успешно добавлен в избранное |
-| 400 | Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном) |
-| 401 |  |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| Token | |
-
-#### DELETE
-##### Описание
-
-Доступно только авторизованным пользователям
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 204 | Рецепт успешно удален из избранного |
-| 400 | Ошибка удаления из избранного (Например, когда рецепта там не было) |
-| 401 |  |
-
-##### Security
-
-| Security Schema | Scopes |
-| --- | --- |
-| Token | |
 
 ### /api/recipes/{id}/shopping_cart/
 
 #### POST
-##### Описание
+##### Добавить рецепт в список покупок
 
 Доступно только авторизованным пользователям
 
@@ -463,8 +661,16 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 201 | Рецепт успешно добавлен в список покупок |
 | 400 | Ошибка добавления в список покупок (Например, когда рецепт уже есть в списке покупок) |
-| 401 |  |
+| 401 | Пользователь не авторизован |
 
+```
+{
+  "id": 0,
+  "name": "string",
+  "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+  "cooking_time": 1
+}
+```
 ##### Security
 
 | Security Schema | Scopes |
@@ -472,7 +678,7 @@ http://localhost/api/users/me/
 | Token | |
 
 #### DELETE
-##### Описание
+##### Удалить рецепт из списка покупок
 
 Доступно только авторизованным пользователям
 
@@ -496,26 +702,37 @@ http://localhost/api/users/me/
 | --- | --- |
 | Token | |
 
-### /api/users/{id}/
+## Избранное
 
-#### GET
-##### Описание
+### /api/recipes/{id}/favorite/
 
-Доступно всем пользователям.
+#### POST
+##### Добавить рецепт в избранное
+
+Доступно только авторизованному пользователю.
 
 ##### Параметры
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| id | path | Уникальный id этого пользователя | Yes | string |
+| id | path | Уникальный идентификатор этого рецепта | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
-| 200 |  |
+| 201 | Рецепт успешно добавлен в избранное |
+| 400 | Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном) |
 | 401 |  |
-| 404 |  |
+
+```
+{
+  "id": 0,
+  "name": "string",
+  "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+  "cooking_time": 1
+}
+```
 
 ##### Security
 
@@ -523,35 +740,37 @@ http://localhost/api/users/me/
 | --- | --- |
 | Token | |
 
-### /api/users/me/
+#### DELETE
+##### Удалить рецепт из избранного
 
-#### GET
-##### Описание
-
-
+Доступно только авторизованным пользователям
 
 ##### Параметры
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
-| 200 |  |
-| 401 |  |
+| 204 | Рецепт успешно удален из избранного |
+| 400 | Ошибка удаления из избранного (Например, когда рецепта там не было) |
+| 401 | Пользователь не авторизован |
 
 ##### Security
 
 | Security Schema | Scopes |
 | --- | --- |
 | Token | |
+
+## Подписки
 
 ### /api/users/subscriptions/
 
 #### GET
-##### Описание
+##### Мои подписки
 
 Возвращает пользователей, на которых подписан текущий пользователь. В выдачу добавляются рецепты.
 
@@ -570,10 +789,37 @@ http://localhost/api/users/me/
 | 200 |  |
 | 401 |  |
 
+```
+{
+  "count": 123,
+  "next": "http://foodgram.example.org/api/users/subscriptions/?page=4",
+  "previous": "http://foodgram.example.org/api/users/subscriptions/?page=2",
+  "results": [
+    {
+      "email": "user@example.com",
+      "id": 0,
+      "username": "string",
+      "first_name": "Вася",
+      "last_name": "Пупкин",
+      "is_subscribed": true,
+      "recipes": [
+        {
+          "id": 0,
+          "name": "string",
+          "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+          "cooking_time": 1
+        }
+      ],
+      "recipes_count": 0
+    }
+  ]
+}
+```
+
 ### /api/users/{id}/subscribe/
 
 #### POST
-##### Описание
+##### Подписаться на пользователя
 
 Доступно только авторизованным пользователям
 
@@ -590,8 +836,28 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 201 | Подписка успешно создана |
 | 400 | Ошибка подписки (Например, если уже подписан или при подписке на себя самого) |
-| 401 |  |
-| 404 |  |
+| 401 | Пользователь не авторизован |
+| 404 | Объект не найден |
+
+```
+{
+  "email": "user@example.com",
+  "id": 0,
+  "username": "string",
+  "first_name": "Вася",
+  "last_name": "Пупкин",
+  "is_subscribed": true,
+  "recipes": [
+    {
+      "id": 0,
+      "name": "string",
+      "image": "http://foodgram.example.org/media/recipes/images/image.jpeg",
+      "cooking_time": 1
+    }
+  ],
+  "recipes_count": 0
+}
+```
 
 ##### Security
 
@@ -600,7 +866,7 @@ http://localhost/api/users/me/
 | Token | |
 
 #### DELETE
-##### Описание
+##### Отписаться от пользователя
 
 Доступно только авторизованным пользователям
 
@@ -616,8 +882,8 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 204 | Успешная отписка |
 | 400 | Ошибка отписки (Например, если не был подписан) |
-| 401 |  |
-| 404 |  |
+| 401 | Пользователь не авторизован |
+| 404 | Объект не найден |
 
 ##### Security
 
@@ -625,10 +891,12 @@ http://localhost/api/users/me/
 | --- | --- |
 | Token | |
 
+## Ингредиенты
+
 ### /api/ingredients/
 
 #### GET
-##### Описание
+##### Список ингредиентов
 
 Список ингредиентов с возможностью поиска по имени.
 
@@ -644,10 +912,20 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 200 |  |
 
+```
+[
+  {
+    "id": 0,
+    "name": "Капуста",
+    "measurement_unit": "кг"
+  }
+]
+```
+
 ### /api/ingredients/{id}/
 
 #### GET
-##### Описание
+##### Получение ингредиента
 
 Уникальный идентификатор этого ингредиента.
 
@@ -663,59 +941,10 @@ http://localhost/api/users/me/
 | ---- | ----------- |
 | 200 |  |
 
-### /api/users/set_password/
-
-#### POST
-##### Описание
-
-Изменение пароля текущего пользователя
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 204 | Пароль успешно изменен |
-| 400 |  |
-| 401 |  |
-
-### /api/auth/token/login/
-
-#### POST
-##### Описание
-
-Используется для авторизации по емейлу и паролю, чтобы далее использовать токен при запросах.
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 201 |  |
-
-### /api/auth/token/logout/
-
-#### POST
-##### Описание
-
-Удаляет токен текущего пользователя
-
-##### Параметры
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 204 |  |
-| 401 |  |
+```
+{
+  "id": 0,
+  "name": "Капуста",
+  "measurement_unit": "кг"
+}
+```
