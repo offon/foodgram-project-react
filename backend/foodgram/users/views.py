@@ -3,6 +3,7 @@ from djoser import utils
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Follow, User
 from .serializers import (CreateUserSerialiser, ListRetrieveUserSerialiser,
@@ -12,6 +13,7 @@ from .serializers import (CreateUserSerialiser, ListRetrieveUserSerialiser,
 class CreateUserViewSet(viewsets.GenericViewSet):
     serializer_class = CreateUserSerialiser
     queryset = User.objects.all()
+    pagination_class = PageNumberPagination
 
     @action(
         detail=False,

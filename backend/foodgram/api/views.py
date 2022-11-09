@@ -61,7 +61,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 Recipe, pk=pk)
             Favorite.objects.get_or_create(
                 user=request.user, is_favorited=recipe)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
         recipe = get_object_or_404(
             Recipe, pk=pk)
         favorite = get_object_or_404(Favorite, is_favorited=recipe)
@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 Recipe, pk=pk)
             IsInShoppingCart.objects.get_or_create(
                 user=request.user, is_in_shopping_cart=recipe)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_200_OK)
         recipe = get_object_or_404(
             Recipe, pk=pk)
         favorite = get_object_or_404(

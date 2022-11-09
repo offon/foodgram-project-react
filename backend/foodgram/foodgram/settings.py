@@ -6,7 +6,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', '*')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS'), '[]']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -57,7 +57,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'DB_ENGINE'),
@@ -68,7 +67,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', 'DB_PORT')
     }
 }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
