@@ -30,12 +30,16 @@ django-filter
 ### УСТАНОВКА
 Для установки Вам потребуется перейти в папку infra
 ```cd infra ```
+
 Запуистить сборку проекта
 ```docker-compose up -d ```
+
 Выполнить миграции:
 ```docker-compose exec web python manage.py migrate```
+
 Создайте пользователя, администратора сайта
 ```docker-compose exec web python manage.py createsuperuser```
+
 Загрузиет статические файлы
 ```docker-compose exec web python manage.py collectstatic --no-input ```
 
@@ -60,3 +64,571 @@ django-filter
 При необходимости пользователь может удалить рецепт из избранного.
 #### Список покупок
 Работа со списком покупок доступна авторизованным пользователям. Список покупок может просматривать только его владелец.
+
+## Примеры запросов
+
+### /api/users/
+
+#### GET
+##### Описание
+
+Получаем список пользоватлей
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| page | query | Номер страницы. | No | integer |
+| limit | query | Количество объектов на странице. | No | integer |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+```{
+  "count": 123,
+  "next": "http://foodgram.example.org/api/users/?page=4",
+  "previous": "http://foodgram.example.org/api/users/?page=2",
+  "results": [
+    {
+      "email": "user@example.com",
+      "id": 0,
+      "username": "string",
+      "first_name": "Вася",
+      "last_name": "Пупкин",
+      "is_subscribed": false
+    }
+  ]
+}```
+
+
+#### POST
+##### Описание
+
+
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Пользователь успешно создан |
+| 400 |  |
+
+### /api/tags/
+
+#### GET
+##### Описание
+
+
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+### /api/tags/{id}/
+
+#### GET
+##### Описание
+
+
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого Тега. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+| 404 |  |
+
+### /api/recipes/
+
+#### GET
+##### Описание
+
+Страница доступна всем пользователям. Доступна фильтрация по избранному, автору, списку покупок и тегам.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| page | query | Номер страницы. | No | integer |
+| limit | query | Количество объектов на странице. | No | integer |
+| is_favorited | query | Показывать только рецепты, находящиеся в списке избранного. | No | integer |
+| is_in_shopping_cart | query | Показывать только рецепты, находящиеся в списке покупок. | No | integer |
+| author | query | Показывать рецепты только автора с указанным id. | No | integer |
+| tags | query | Показывать рецепты только с указанными тегами (по slug) | No | [ string ] |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+#### POST
+##### Описание
+
+Доступно только авторизованному пользователю
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Рецепт успешно создан |
+| 400 | Ошибки валидации в стандартном формате DRF |
+| 401 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/recipes/download_shopping_cart/
+
+#### GET
+##### Описание
+
+Скачать файл со списком покупок. Это может быть TXT/PDF/CSV. Важно, чтобы контент файла удовлетворял требованиям задания. Доступно только авторизованным пользователям.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/recipes/{id}/
+
+#### GET
+##### Описание
+
+
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+#### PATCH
+##### Описание
+
+Доступно только автору данного рецепта
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Рецепт успешно обновлен |
+| 400 |  |
+| 401 |  |
+| 403 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+#### DELETE
+##### Описание
+
+Доступно только автору данного рецепта
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | Рецепт успешно удален |
+| 401 |  |
+| 403 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/recipes/{id}/favorite/
+
+#### POST
+##### Описание
+
+Доступно только авторизованному пользователю.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Рецепт успешно добавлен в избранное |
+| 400 | Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном) |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+#### DELETE
+##### Описание
+
+Доступно только авторизованным пользователям
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | Рецепт успешно удален из избранного |
+| 400 | Ошибка удаления из избранного (Например, когда рецепта там не было) |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/recipes/{id}/shopping_cart/
+
+#### POST
+##### Описание
+
+Доступно только авторизованным пользователям
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Рецепт успешно добавлен в список покупок |
+| 400 | Ошибка добавления в список покупок (Например, когда рецепт уже есть в списке покупок) |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+#### DELETE
+##### Описание
+
+Доступно только авторизованным пользователям
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого рецепта. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | Рецепт успешно удален из списка покупок |
+| 400 | Ошибка удаления из списка покупок (Например, когда рецепта там не было) |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/users/{id}/
+
+#### GET
+##### Описание
+
+Доступно всем пользователям.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный id этого пользователя | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+| 401 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/users/me/
+
+#### GET
+##### Описание
+
+
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+| 401 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/users/subscriptions/
+
+#### GET
+##### Описание
+
+Возвращает пользователей, на которых подписан текущий пользователь. В выдачу добавляются рецепты.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| page | query | Номер страницы. | No | integer |
+| limit | query | Количество объектов на странице. | No | integer |
+| recipes_limit | query | Количество объектов внутри поля recipes. | No | integer |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+| 401 |  |
+
+### /api/users/{id}/subscribe/
+
+#### POST
+##### Описание
+
+Доступно только авторизованным пользователям
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого пользователя. | Yes | string |
+| recipes_limit | query | Количество объектов внутри поля recipes. | No | integer |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 | Подписка успешно создана |
+| 400 | Ошибка подписки (Например, если уже подписан или при подписке на себя самого) |
+| 401 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+#### DELETE
+##### Описание
+
+Доступно только авторизованным пользователям
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path | Уникальный идентификатор этого пользователя. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | Успешная отписка |
+| 400 | Ошибка отписки (Например, если не был подписан) |
+| 401 |  |
+| 404 |  |
+
+##### Security
+
+| Security Schema | Scopes |
+| --- | --- |
+| Token | |
+
+### /api/ingredients/
+
+#### GET
+##### Описание
+
+Список ингредиентов с возможностью поиска по имени.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| name | query | Поиск по частичному вхождению в начале названия ингредиента. | No | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+### /api/ingredients/{id}/
+
+#### GET
+##### Описание
+
+Уникальный идентификатор этого ингредиента.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| id | path |  | Yes | integer |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 |  |
+
+### /api/users/set_password/
+
+#### POST
+##### Описание
+
+Изменение пароля текущего пользователя
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 | Пароль успешно изменен |
+| 400 |  |
+| 401 |  |
+
+### /api/auth/token/login/
+
+#### POST
+##### Описание
+
+Используется для авторизации по емейлу и паролю, чтобы далее использовать токен при запросах.
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 201 |  |
+
+### /api/auth/token/logout/
+
+#### POST
+##### Описание
+
+Удаляет токен текущего пользователя
+
+##### Параметры
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 204 |  |
+| 401 |  |
