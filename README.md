@@ -29,18 +29,23 @@ django-filter
 
 ### УСТАНОВКА
 Для установки Вам потребуется перейти в папку infra
+
 ```cd infra ```
 
 Запуистить сборку проекта
+
 ```docker-compose up -d ```
 
 Выполнить миграции:
+
 ```docker-compose exec web python manage.py migrate```
 
 Создайте пользователя, администратора сайта
+
 ```docker-compose exec web python manage.py createsuperuser```
 
 Загрузиет статические файлы
+
 ```docker-compose exec web python manage.py collectstatic --no-input ```
 
 
@@ -65,14 +70,17 @@ django-filter
 #### Список покупок
 Работа со списком покупок доступна авторизованным пользователям. Список покупок может просматривать только его владелец.
 
-## Примеры запросов
+### Примеры запросов
 
+## Пользователи
 ### /api/users/
 
 #### GET
-##### Описание
+```
+http://localhost/api/users/
 
-Получаем список пользоватлей
+```
+##### Список пользователей
 
 ##### Параметры
 
@@ -105,23 +113,100 @@ django-filter
 }
 ```
 
-
 #### POST
-##### Описание
+```
+http://localhost/api/users/
 
+```
+##### Регистрация пользователя
 
+```
+{
+  "email": "vpupkin@yandex.ru",
+  "username": "vasya.pupkin",
+  "first_name": "Вася",
+  "last_name": "Пупкин",
+  "password": "Qwerty123"
+}
+```
 
 ##### Параметры
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 
+
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 201 | Пользователь успешно создан |
-| 400 |  |
+| 400 | 400 Ошибки валидации в стандартном формате DRF  |
+
+```
+{
+  "email": "vpupkin@yandex.ru",
+  "id": 0,
+  "username": "vasya.pupkin",
+  "first_name": "Вася",
+  "last_name": "Пупкин"
+}
+```
+
+#### GET
+
+```
+http://localhost/api/users/{id}/
+```
+##### Профиль пользователя
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | - |
+| 401 | Пользователь не авторизован  |
+| 404 | Объект не найден  |
+
+```
+{
+  "email": "user@example.com",
+  "id": 0,
+  "username": "string",
+  "first_name": "Вася",
+  "last_name": "Пупкин",
+  "is_subscribed": false
+}
+```
+
+#### GET
+
+```
+http://localhost/api/users/me/
+
+```
+##### Текущий пользователь
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | - |
+| 401 | Пользователь не авторизован  |
+
+```
+{
+  "email": "user@example.com",
+  "id": 0,
+  "username": "string",
+  "first_name": "Вася",
+  "last_name": "Пупкин",
+  "is_subscribed": false
+}
+```
+
+
+
 
 ### /api/tags/
 
