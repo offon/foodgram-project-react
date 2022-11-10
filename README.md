@@ -4,7 +4,7 @@
 
 Сайт доступен на: 158.160.34.163
 
-Пользователь: nik
+Пользователь: nik@nik.ru
 Пароль: nik
 
 #### Приложение представляет из себя 4 контейнера:
@@ -16,20 +16,20 @@
 
 #### Требуемые приложения для установки (requirements)
 
-Django==2.2.16
-djoser==2.1.0
-pytest==6.2.4
-pytest-pythonpath==0.7.3
-pytest-django==4.4.0
-djangorestframework==3.12.4
-djangorestframework-simplejwt==4.8.0
-Pillow==8.3.1
-PyJWT==2.1.0
-requests==2.26.0
-reportlab
-gunicorn==20.0.4
-psycopg2-binary==2.8.6
-django-filter
+Django==2.2.16  
+djoser==2.1.0  
+pytest==6.2.4  
+pytest-pythonpath==0.7.3  
+pytest-django==4.4.0  
+djangorestframework==3.12.4  
+djangorestframework-simplejwt==4.8.0  
+Pillow==8.3.1  
+PyJWT==2.1.0  
+requests==2.26.0  
+reportlab  
+gunicorn==20.0.4  
+psycopg2-binary==2.8.6  
+django-filter  
 
 ### УСТАНОВКА
 Для установки Вам потребуется перейти в папку infra
