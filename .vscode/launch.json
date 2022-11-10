@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Unit Test",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/foodgram/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+        },
+        {
             "name": "Python: Django",
             "type": "python",
             "request": "launch",
@@ -12,7 +22,8 @@
             "args": [
                 "runserver"
             ],
-            "django": true
+            "django": true,
+            "justMyCode": true,
         }
     ]
 }

@@ -5,7 +5,6 @@ from .models import Follow, User
 
 
 class CreateUserSerialiser(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('username', 'email', "first_name", "last_name", "password")
@@ -18,6 +17,12 @@ class CreateUserSerialiser(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UserResetPassword(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', "first_name", "last_name", "password")
 
 
 class ListRetrieveUserSerialiser(serializers.ModelSerializer):
