@@ -64,7 +64,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_200_OK)
         recipe = get_object_or_404(
             Recipe, pk=pk)
-        favorite = get_object_or_404(Favorite, is_favorited=recipe)
+        favorite = get_object_or_404(
+            Favorite, user=request.user, is_favorited=recipe)
         favorite.delete()
         return Response(status=status.HTTP_200_OK)
 
@@ -80,6 +81,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Recipe, pk=pk)
         favorite = get_object_or_404(
             IsInShoppingCart,
+            user=request.user,
             is_in_shopping_cart=recipe)
         favorite.delete()
         return Response(status=status.HTTP_200_OK)
