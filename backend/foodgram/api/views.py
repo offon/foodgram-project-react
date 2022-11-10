@@ -36,8 +36,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     permission_classes = [AuthorOrReadOnly, ]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filterset_fields = ('tags__slug', )
-    search_fields = ('name', )
+    filterset_fields = ('tags__slug', 'author')
+    search_fields = ('name', 'author')
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
