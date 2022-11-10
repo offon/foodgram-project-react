@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from djoser import utils
-from djoser.serializers import SetPasswordRetypeSerializer
+from djoser.serializers import SetPasswordSerializer
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -67,7 +67,7 @@ class CreateUserViewSet(viewsets.GenericViewSet):
         permission_classes=[permissions.IsAuthenticated],
     )
     def set_password(self, request):
-        serializer = SetPasswordRetypeSerializer(
+        serializer = SetPasswordSerializer(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.request.user.set_password(serializer.data["new_password"])
