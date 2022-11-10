@@ -433,7 +433,7 @@ django-filter
   "cooking_time": 1
 }
 ```
-### http://localhost/api/recipes/{id}/
+### /api/recipes/{id}/
 #### GET
 ##### Получение рецепта
 
