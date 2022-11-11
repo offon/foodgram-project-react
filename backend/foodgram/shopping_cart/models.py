@@ -10,8 +10,8 @@ class IsInShoppingCart(models.Model):
         Recipe, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'Добавлен в корзину'
-        verbose_name_plural = 'Добавлены в корзину'
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзина'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'is_in_shopping_cart'],

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -22,6 +22,11 @@ class Follow(models.Model):
         'User', on_delete=models.CASCADE, related_name='follower')
     author = models.ForeignKey(
         'User', on_delete=models.CASCADE, related_name='following')
+
+    def save(self, *args, **kwargs):
+        if self.user == self.author:
+            raise ValidationError('На самого себя нельзя подписаться')
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Подписка'

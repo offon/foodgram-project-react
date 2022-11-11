@@ -9,6 +9,18 @@ class ComponentInline(admin.TabularInline):
     extra = 1
 
 
+class IsFavoriteInline(admin.TabularInline):
+    model = Favorite
+    fk_name = "is_favorited"
+    extra = 1
+
+
+class IsInShoppingCartInline(admin.TabularInline):
+    model = IsInShoppingCart
+    fk_name = "is_in_shopping_cart"
+    extra = 1
+
+
 class UserAdmin(admin.ModelAdmin):
     inlines = (ComponentInline,)
 
@@ -18,7 +30,7 @@ class RecipeAdmin(admin.ModelAdmin):
     display = ['name', 'author', 'favorite_count']
     list_filter = ('name', 'author', 'tags')
     search_fields = ('name', 'author')
-    inlines = (ComponentInline, )
+    inlines = [ComponentInline, IsFavoriteInline, IsInShoppingCartInline]
 
     def favorite_count(self, inst):
         return inst.favorited_recipe.count()
@@ -46,9 +58,7 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'color', 'slug')
 
 
-admin.site.register(Component, ComponentAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(IsInShoppingCart, IsInShoppingCartAdmin)
+
