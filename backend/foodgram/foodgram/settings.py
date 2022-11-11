@@ -20,9 +20,9 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'api',
-    'recipes.app.RecipesConfig',
-    'users.app.UsersConfig',
-    'shopping_cart.app.ShoppingCartConfig'
+    'recipes',
+    'users',
+    'shopping_cart'
 ]
 AUTH_USER_MODEL = 'users.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
