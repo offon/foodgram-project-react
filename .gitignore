@@ -136,3 +136,4 @@ dmypy.json
 .vscode/
 db.sqlite3
 settings_b.py
+reload_web.sh

@@ -8,7 +8,7 @@ class Tag(models.Model):
     color = models.CharField(
         max_length=8,
         validators=[RegexValidator(
-            regex=r'^#[\d|A-Z]{6}$',
+            regex=r'^#[\d|A-Z|a-z]{6}$',
             message='Цвет должен быть в HEX формате, прим: #49B64E')],
         unique=True,
         blank=False)

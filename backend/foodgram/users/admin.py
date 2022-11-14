@@ -41,4 +41,3 @@ admin.site.register(MyToken, TokenAdmin)
 
 admin.site.unregister(Group)
 admin.site.unregister(TokenProxy)
-

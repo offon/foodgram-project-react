@@ -1,12 +1,13 @@
 import base64
+
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.core.files.base import ContentFile
-from django.shortcuts import get_list_or_404, get_object_or_404
-from recipes.models import Component, Ingredient, Recipe, Tag, Favorite
+from django.shortcuts import get_list_or_404
+from recipes.models import Component, Ingredient, Recipe, Tag
 from rest_framework import exceptions, serializers
 
-from shopping_cart.models import IsInShoppingCart
 from users.serializers import ListRetrieveUserSerialiser
 
 
@@ -62,7 +63,6 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
-    image = Base64ImageField(required=False, allow_null=True)
 
     def get_ingredients(self, obj):
         ingredients = get_list_or_404(Component, recipe=obj)
@@ -84,32 +84,67 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'tags', 'author', 'image',
+        fields = ['id', 'tags', 'author', 'image',
                   'ingredients', 'is_favorited', 'is_in_shopping_cart', 'name',
-                  'text', 'cooking_time')
+                  'text', 'cooking_time']
+
+
+class ComponentInRecipe(serializers.BaseSerializer):
+    def to_internal_value(self, data):
+        id = data.get('id')
+        quantity = data.get('amount')
+        recipe = self.context.get('recipe')
+
+        try:
+            ingredien = Ingredient.objects.get(id=id)
+        except(ValueError, ObjectDoesNotExist):
+            raise serializers.ValidationError({
+                'id': 'Не правильно указан ингридиент.'
+            })
+        if not quantity:
+            raise serializers.ValidationError({
+                'amount': 'Обязательное поле.'
+            })
+        if not recipe:
+            raise serializers.ValidationError({
+                'recipe': 'Обязательное поле.'
+            })
+        return {
+            'ingredient': ingredien,
+            'recipe': recipe,
+            'quantity': quantity
+        }
+
+    def create(self, validated_data):
+        return Component.objects.create(**validated_data)
+
+
+class RecipeCreateUpdate(serializers.ModelSerializer):
+    author = ListRetrieveUserSerialiser(read_only=True)
+    image = Base64ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = Recipe
+        fields = ['tags', 'author', 'image',
+                  'ingredients', 'name',
+                  'text', 'cooking_time', 'image']
 
     def create(self, validated_data):
         request = self.context['request']
         validated_data['author'] = request.user
         ingredients = request.data.get('ingredients')
-        tags = request.data.get('tags')
-        if not ingredients or not tags:
-            return exceptions.bad_request
+        tags = validated_data.pop('tags')
         with transaction.atomic():
             recipe = Recipe.objects.create(**validated_data)
-            for tag in tags:
-                recipe.tags.add(tag)
-            components_data = []
-            for ingredient in ingredients:
-                components_data.append(Component(
-                    ingredient=Ingredient.objects.get(
-                        id=ingredient.get('id')),
-                    recipe=recipe,
-                    quantity=ingredient.get('amount')
-                    ))
-            if components_data:
-                Component.objects.bulk_create(components_data)
-            return recipe
+            recipe.tags.set(tags)
+            components = ComponentInRecipe(
+                data=ingredients,
+                many=True,
+                context={'recipe': recipe})
+            if components.is_valid(raise_exception=True):
+                components.save()
+                return recipe
+            return exceptions.bad_request
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -117,31 +152,20 @@ class RecipesGetSerialiser(serializers.ModelSerializer):
         instance.cooking_time = validated_data.get(
             'cooking_time', instance.cooking_time)
         instance.image = validated_data.get('image', instance.image)
+        instance.tags.set(validated_data.get('tags', instance.tags))
 
         request = self.context.get('request')
-        data = request.data
-        tags = data.get('tags')
-        ingredients = data.get('ingredients')
+        ingredients = request.data.get('ingredients')
 
         with transaction.atomic():
-            instance.tags.clear()
             instance.ingredients.clear()
-            if tags:
-                for tag in tags:
-                    instance.tags.add(tag)
-            components_data = []
-            if ingredients:
-                for ingredient in ingredients:
-                    components_data.append(Component(
-                        ingredient=Ingredient.objects.get(
-                            id=ingredient.get('id')),
-                        recipe=instance,
-                        quantity=ingredient.get('amount')
-                        ))
-            if components_data:
-                instance.components.all().delete()
-                Component.objects.bulk_create(components_data)
-        instance.save()
+            components = ComponentInRecipe(
+                data=ingredients,
+                many=True,
+                context={'recipe': instance})
+            if components.is_valid(raise_exception=True):
+                components.save()
+            instance.save()
         return instance
 
 

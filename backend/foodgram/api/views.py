@@ -11,7 +11,7 @@ from shopping_cart.utils import shopping_cart_pdf
 
 from .permissions import AuthorOrReadOnly
 from .serialisers import (IngredientsSerialisers, RecipesGetSerialiser,
-                          TagsSerialisers)
+                          TagsSerialisers, RecipeCreateUpdate)
 
 
 class DownloadPDF(views.APIView):
@@ -39,6 +39,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_fields = ('tags__slug', 'author')
     search_fields = ('name', 'author')
     pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'partial_update']:
+            return RecipeCreateUpdate
+        return RecipesGetSerialiser
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
